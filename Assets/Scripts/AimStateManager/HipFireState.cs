@@ -4,11 +4,19 @@ public class HipFireState : AimBaseState
 {
     public override void EnterState(AimStateManager aim)
     {
-        aim.anim.SetBool("Aiming", false);
+        aim.currentFov = aim.hipFov;
+        if (aim.anim != null)
+            aim.anim.SetBool("Aiming", false);
+        
+        //aim.anim.SetBool("Aiming", false);
+        
     }
 
     public override void UpdateState(AimStateManager aim)
     {
-        if (Input.GetKey(KeyCode.Mouse1)) aim.SwitchState(aim.Aim);
+        if (Input.GetKey(KeyCode.Mouse1))
+        {
+            aim.SwitchState(aim.Aim);
+        }
     }
 }
