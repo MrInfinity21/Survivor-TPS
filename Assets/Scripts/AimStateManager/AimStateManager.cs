@@ -6,7 +6,9 @@ public class AimStateManager : MonoBehaviour
     public HipFireState Hip = new HipFireState();
     public AimState Aim = new AimState();
 
-    [SerializeField] private Transform cameraTransform;
+    [SerializeField] private Transform cameraPivot;
+    [SerializeField] private float mouseSensitivity = 1f;
+    float xAxis, yAxis;
 
     [HideInInspector] public Animator anim;
 
@@ -20,14 +22,36 @@ public class AimStateManager : MonoBehaviour
     }
     void Update()
     {
+        HandleInput();
         RotatePlayerToCamera();
 
         currentState.UpdateState(this);
     }
 
+    private void LateUpdate()
+    {
+        RotateCameraPivot();
+    }
+
+    private void HandleInput()
+    {
+        xAxis += Input.GetAxisRaw("Mouse X") * mouseSensitivity;
+        yAxis -= Input.GetAxisRaw("Mouse Y") * mouseSensitivity;
+        yAxis = Mathf.Clamp(yAxis, -80f, 80f);
+    }
+
+    private void RotateCameraPivot()
+    {
+        if (cameraPivot != null)
+        {
+            cameraPivot.localEulerAngles = new Vector3(yAxis, 0f, 0f);
+        }
+        transform.eulerAngles = new Vector3(0f, xAxis, 0f);
+    }
+
     private void RotatePlayerToCamera()
     {
-        Vector3 viewDirection = cameraTransform.forward;
+        Vector3 viewDirection = cameraPivot.forward;
         viewDirection.y = 0f;
         viewDirection.Normalize();
 
