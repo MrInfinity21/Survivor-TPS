@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.Cinemachine;
+using Unity.VisualScripting;
 public class AimStateManager : MonoBehaviour
 {
     AimBaseState currentState;
@@ -11,33 +12,50 @@ public class AimStateManager : MonoBehaviour
     float xAxis, yAxis;
 
     [HideInInspector] public Animator anim;
+    [HideInInspector] public CinemachineCamera vCam;
+    public float adsFov = 40f;
+    [HideInInspector] public float hipFov;
+    [HideInInspector] public float currentFov;
+    public float fovSmoothSpeed = 10f;
 
-    private void Start()
+    [SerializeField] Transform aimPos;
+    [SerializeField] float aimSmoothSpeed;
+    [SerializeField] LayerMask aimMask;
+
+    void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
 
-        anim = GetComponentInChildren<Animator>();
+
+        vCam = GetComponentInChildren<CinemachineCamera>();
+        hipFov = vCam.Lens.FieldOfView;
+        anim = GetComponent<Animator>();
         SwitchState(Hip);
 
     }
     void Update()
     {
-        HandleInput();
+        
         RotatePlayerToCamera();
-
         currentState.UpdateState(this);
+
+        xAxis += Input.GetAxisRaw("Mouse X") * mouseSensitivity;
+        yAxis -= Input.GetAxisRaw("Mouse Y") * mouseSensitivity;
+        yAxis = Mathf.Clamp(yAxis, -80f, 80f);
+
+        vCam.Lens.FieldOfView = Mathf.Lerp(vCam.Lens.FieldOfView, currentFov, fovSmoothSpeed * Time.deltaTime);
+
+
+        Vector2 screenCentre = new Vector2(Screen.width/2, Screen.height/2);
+        Ray ray = Camera.main.ScreenPointToRay(screenCentre);
+
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, aimMask))
+            aimPos.position = Vector3.Lerp(aimPos.position, hit.point, aimSmoothSpeed * Time.deltaTime);
     }
 
     private void LateUpdate()
     {
         RotateCameraPivot();
-    }
-
-    private void HandleInput()
-    {
-        xAxis += Input.GetAxisRaw("Mouse X") * mouseSensitivity;
-        yAxis -= Input.GetAxisRaw("Mouse Y") * mouseSensitivity;
-        yAxis = Mathf.Clamp(yAxis, -80f, 80f);
     }
 
     private void RotateCameraPivot()
