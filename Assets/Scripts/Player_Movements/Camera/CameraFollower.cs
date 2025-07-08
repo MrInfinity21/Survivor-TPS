@@ -11,6 +11,6 @@ public class CameraFollower : MonoBehaviour
         Vector3 direction = _target.transform.position - transform.position;
 
         Quaternion rotation = Quaternion.LookRotation(direction);
-        transform.rotation = Quaternion.Slerp(transform.rotation, rotation, 5f * Time.deltaTime);
+        transform.rotation = Quaternion.Slerp(transform.rotation, rotation, 3f * Time.deltaTime);
     }
 }

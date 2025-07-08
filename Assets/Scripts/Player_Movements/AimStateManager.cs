@@ -3,7 +3,7 @@ using Unity.Cinemachine;
 public class AimStateManager : MonoBehaviour
 {
     [SerializeField] private Transform cameraTransform;
-    [SerializeField] private Transform orientation;
+    
 
     private void Start()
     {
