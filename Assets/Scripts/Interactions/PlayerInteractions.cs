@@ -7,7 +7,7 @@ public class PlayerInteractions : MonoBehaviour
     [SerializeField] private Transform cam;
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.E)) //we never ever ever ever ever want to use KeyCode. You can only use things like this for debugging, not for actual gameplay.
         {
             TryInteract();
         }

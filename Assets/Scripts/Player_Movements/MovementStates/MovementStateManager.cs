@@ -1,5 +1,7 @@
+using Player_Movements.MovementStates;
 using UnityEngine;
 
+[RequireComponent(typeof(InputController))] //this will force you to have an input controller
 public class MovementStateManager : MonoBehaviour
 {
     #region Movement
@@ -19,7 +21,7 @@ public class MovementStateManager : MonoBehaviour
 
     [SerializeField] float gravity = -9.81f;
     Vector3 velocity;
-
+    private Vector2 _movementDirection;
    
 
     MovementBaseState currentState;
@@ -61,14 +63,20 @@ public class MovementStateManager : MonoBehaviour
         currentState.EnterState(this); 
     }
 
-    void GetDirectionAndMove()
+    public void SetDirection(Vector2 direction)
     {
-        hzInput = Input.GetAxis("Horizontal");
-        vInput = Input.GetAxis("Vertical");
-
+        hzInput = direction.x;
+        vInput = direction.y;
         dir = transform.forward * vInput + transform.right * hzInput;
 
         controller.Move(dir.normalized * currentMoveSpeed *  Time.deltaTime);
+    }
+    void GetDirectionAndMove()
+    {
+        //hzInput = Input.GetAxis("Horizontal");
+        //vInput = Input.GetAxis("Vertical");
+
+
     }
 
     bool IsGrounded()

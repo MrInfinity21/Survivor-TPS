@@ -21,7 +21,7 @@ public class AimStateManager : MonoBehaviour
     [SerializeField] Transform aimPos;
     [SerializeField] float aimSmoothSpeed;
     [SerializeField] LayerMask aimMask;
-
+    private Vector2 _aimDirection;
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -31,7 +31,14 @@ public class AimStateManager : MonoBehaviour
         hipFov = vCam.Lens.FieldOfView;
         anim = GetComponent<Animator>();
         SwitchState(Hip);
+        _aimDirection = Vector2.zero;
 
+    }
+
+    public void HandleAimDirection(Vector2 direction)
+    {
+        _aimDirection = direction;
+        Debug.Log($"We got the direction of {direction}");
     }
     void Update()
     {
@@ -39,8 +46,8 @@ public class AimStateManager : MonoBehaviour
         RotatePlayerToCamera();
         currentState.UpdateState(this);
 
-        xAxis += Input.GetAxisRaw("Mouse X") * mouseSensitivity;
-        yAxis -= Input.GetAxisRaw("Mouse Y") * mouseSensitivity;
+        xAxis += _aimDirection.x * mouseSensitivity;
+        yAxis -= _aimDirection.y * mouseSensitivity;
         yAxis = Mathf.Clamp(yAxis, -80f, 80f);
 
         vCam.Lens.FieldOfView = Mathf.Lerp(vCam.Lens.FieldOfView, currentFov, fovSmoothSpeed * Time.deltaTime);
