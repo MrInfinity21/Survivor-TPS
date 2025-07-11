@@ -1,9 +1,140 @@
 using UnityEngine;
 using UnityEngine.AI;
+using DG.Tweening;
 
+[RequireComponent(typeof(NavMeshAgent))]
 public class BadGuyController : MonoBehaviour
 {
-    private NavMeshAgent _badGuyController;
+
+    [Header("Patrol Settings")]
+    [SerializeField] private Transform[] _patrolPoints;
+    [SerializeField] private float _patrolSpeed = 2f;
+    private int _currentPatrolIndex = 0;
+    private bool _isChasing = false;
+    private Tween _patrolTween;
+
+    [Header("Player Detection")]
+    [SerializeField] private Transform _player;
+    [SerializeField] private float _detectionRange = 10f;
+
+    private NavMeshAgent _badEnemy;
+    private Rigidbody _rb;
+
+    private void Awake()
+    {
+        _badEnemy = GetComponent<NavMeshAgent>();
+        _badEnemy.enabled = false; // Disable during patrol with DOTween
+
+        _rb = GetComponent<Rigidbody>();
+        if (_rb != null)
+        {
+            _rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+
+        }
+        _badEnemy.enabled = false;
+    }
+
+    private void Start()
+    {
+        StartPatrolling();
+    }
+
+    private void Update()
+    {
+        float distanceToPlayer = Vector3.Distance(transform.position, _player.position);
+
+        if(distanceToPlayer <= _detectionRange)
+        {
+            if (!_isChasing)
+                StartChasing();
+        }
+        else
+        {
+            if (_isChasing)
+                StopChasing();
+        }
+        if (_isChasing)
+        {
+            _badEnemy.SetDestination(_player.position);
+
+            Vector3 direction = (_player.position - transform.position).normalized;
+            direction.y = 0;
+            if (direction != Vector3.zero)
+            {
+                Quaternion lookRotation = Quaternion.LookRotation(direction);
+                transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
+            }
+        }
+    }
+
+    private void StartPatrolling()
+    {
+        if (_patrolPoints.Length == 0) return;
+
+        MoveToNextPatrolPoint();
+    }
+
+    private void MoveToNextPatrolPoint()
+    {
+        Transform target = _patrolPoints[_currentPatrolIndex];
+        float distance = Vector3.Distance(transform.position, target.position);
+
+        Vector3 lookTarget = new Vector3(target.position.x, transform.position.y, target.position.z);
+        
+
+        transform.DOLookAt(target.position, 0.5f);
+
+        _patrolTween = transform.DOMove(target.position, distance / _patrolSpeed)
+        .SetEase(Ease.Linear)
+        .OnComplete(() =>
+        {
+            _currentPatrolIndex = (_currentPatrolIndex + 1) % _patrolPoints.Length;
+            MoveToNextPatrolPoint();
+        });
+
+    }
+
+    private void StartChasing()
+    {
+        _isChasing = true;
+        _patrolTween?.Kill();
+
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(transform.position, out hit, 2f, NavMesh.AllAreas))
+        {
+            transform.position = hit.position;
+            _badEnemy.enabled = true;
+        }
+        else
+        {
+            Debug.LogWarning("Enemy is not on a valid NavMesh position!");
+        }
+
+
+
+        
+    }
+
+    private void StopChasing()
+    {
+        _isChasing = true;
+        _badEnemy.enabled = false;
+        StartPatrolling();
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (_player != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position, _detectionRange);
+        }
+    }
+
+
+
+
+    /*private NavMeshAgent _badGuyController;
     [SerializeField] private Transform _player;
 
     private void Awake()
@@ -20,5 +151,5 @@ public class BadGuyController : MonoBehaviour
     {   
         _badGuyController.speed = 50f;
         _badGuyController.destination = _player.position;
-    }
+    }*/
 }

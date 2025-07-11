@@ -4,8 +4,8 @@ public class AimState : AimBaseState
 {
     public override void EnterState(AimStateManager aim)
     {
-        aim.anim.SetBool("Aiming", true);
-        aim.currentFov = aim.adsFov;
+        aim._anim.SetBool("Aiming", true);
+        aim._currentFov = aim._adsFov;
     }
 
     public override void UpdateState(AimStateManager aim)

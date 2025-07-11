@@ -13,12 +13,12 @@ public class MovementStateManager : MonoBehaviour
     CharacterController controller;
     #endregion
 
-    [SerializeField] float groundYOffset;
-    [SerializeField] LayerMask groundMask;
-    Vector3 spherePos;
+    [SerializeField] float _groundYOffset;
+    [SerializeField] LayerMask _groundMask;
+    Vector3 _spherePos;
 
-    [SerializeField] float gravity = -9.81f;
-    Vector3 velocity;
+    [SerializeField] float _gravity = -9.81f;
+    Vector3 _velocity;
 
    
 
@@ -38,7 +38,6 @@ public class MovementStateManager : MonoBehaviour
         animator = GetComponent<Animator>();
         controller = GetComponent<CharacterController>();
         SwitchState(Idle);
-
     }
 
     
@@ -50,9 +49,6 @@ public class MovementStateManager : MonoBehaviour
         animator.SetFloat("hzInput", hzInput);
         animator.SetFloat("vInput", vInput);
         currentState.UpdateState(this);
-
-       
-
     }
 
     public void SwitchState(MovementBaseState state)
@@ -73,17 +69,17 @@ public class MovementStateManager : MonoBehaviour
 
     bool IsGrounded()
     {
-        spherePos = new Vector3(transform.position.x, transform.position.y - groundYOffset, transform.position.z);
-        if (Physics.CheckSphere(spherePos, controller.radius - 0.05f, groundMask)) return true;
+        _spherePos = new Vector3(transform.position.x, transform.position.y - _groundYOffset, transform.position.z);
+        if (Physics.CheckSphere(_spherePos, controller.radius - 0.05f, _groundMask)) return true;
         return false;
     }
 
     void Gravity()
     {
-        if (!IsGrounded()) velocity.y += gravity * Time.deltaTime;
-        else if (velocity.y < 0) velocity.y = -2;
+        if (!IsGrounded()) _velocity.y += _gravity * Time.deltaTime;
+        else if (_velocity.y < 0) _velocity.y = -2;
 
-        controller.Move(velocity *  Time.deltaTime);
+        controller.Move(_velocity *  Time.deltaTime);
     }
 
     
@@ -91,10 +87,7 @@ public class MovementStateManager : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(spherePos, controller.radius - 0.05f);
-    
-      
-    
+        Gizmos.DrawWireSphere(_spherePos, controller.radius - 0.05f);
     }
 
 
