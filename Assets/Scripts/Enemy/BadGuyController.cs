@@ -18,24 +18,18 @@ public class BadGuyController : MonoBehaviour
     [SerializeField] private float _detectionRange = 10f;
 
     private NavMeshAgent _badEnemy;
-    private Rigidbody _rb;
+    
 
     private void Awake()
     {
         _badEnemy = GetComponent<NavMeshAgent>();
         _badEnemy.enabled = false; // Disable during patrol with DOTween
-
-        _rb = GetComponent<Rigidbody>();
-        if (_rb != null)
-        {
-            _rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
-
-        }
         _badEnemy.enabled = false;
     }
 
     private void Start()
     {
+        SnapToNavMesh();
         StartPatrolling();
     }
 
@@ -43,17 +37,13 @@ public class BadGuyController : MonoBehaviour
     {
         float distanceToPlayer = Vector3.Distance(transform.position, _player.position);
 
-        if(distanceToPlayer <= _detectionRange)
+        if(!_isChasing && distanceToPlayer <= _detectionRange)
         {
-            if (!_isChasing)
+      
                 StartChasing();
         }
-        else
-        {
-            if (_isChasing)
-                StopChasing();
-        }
-        if (_isChasing)
+        
+        if (_isChasing && _badEnemy.enabled && _badEnemy.isOnNavMesh)
         {
             _badEnemy.SetDestination(_player.position);
 
@@ -98,7 +88,12 @@ public class BadGuyController : MonoBehaviour
     {
         _isChasing = true;
         _patrolTween?.Kill();
-
+        SnapToNavMesh();
+        _badEnemy.enabled = true;               
+    }
+    
+    private void SnapToNavMesh()
+    {
         NavMeshHit hit;
         if (NavMesh.SamplePosition(transform.position, out hit, 2f, NavMesh.AllAreas))
         {
@@ -109,18 +104,8 @@ public class BadGuyController : MonoBehaviour
         {
             Debug.LogWarning("Enemy is not on a valid NavMesh position!");
         }
-
-
-
-        
     }
 
-    private void StopChasing()
-    {
-        _isChasing = true;
-        _badEnemy.enabled = false;
-        StartPatrolling();
-    }
 
     private void OnDrawGizmosSelected()
     {
