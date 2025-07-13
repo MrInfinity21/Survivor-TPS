@@ -5,6 +5,11 @@ public class WeaponAmmo : MonoBehaviour
     public int _clipSize;
     public int _extraAmmo;
     [HideInInspector] public int _currentAmmo;
+
+    public AudioClip _magInSound;
+    public AudioClip _magOutSound;
+    public AudioClip _releaseSlideSound;
+
     void Start()
     {
         _currentAmmo = _clipSize;

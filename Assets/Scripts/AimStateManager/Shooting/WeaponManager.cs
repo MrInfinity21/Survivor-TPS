@@ -19,11 +19,14 @@ public class WeaponManager : MonoBehaviour
     AudioSource _audioSource;
     WeaponAmmo _ammo;
 
+    ActionStateManager _actions;
+
     void Start()
     {
         _audioSource = GetComponent<AudioSource>();
         _aim = GetComponentInParent<AimStateManager>();
         _ammo = GetComponent<WeaponAmmo>();
+        _actions = GetComponentInParent<ActionStateManager>();
         _fireRateTimer = _fireRate;    
     }
 
@@ -38,6 +41,7 @@ public class WeaponManager : MonoBehaviour
         _fireRateTimer += Time.deltaTime;
         if (_fireRateTimer < _fireRate) return false;
         if(_ammo._currentAmmo == 0) return false;
+        if (_actions._currentState == _actions.Reload) return false;
         if (_semiAuto && Input.GetKeyDown(KeyCode.Mouse0)) return true;
         if (!_semiAuto && Input.GetKey(KeyCode.Mouse0)) return true;
         return false;

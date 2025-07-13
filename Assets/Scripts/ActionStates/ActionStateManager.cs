@@ -3,7 +3,7 @@ using UnityEngine.Animations.Rigging;
 
 public class ActionStateManager : MonoBehaviour
 {
-    ActionBaseState _currentState;
+    [HideInInspector] public ActionBaseState _currentState;
 
     public ReloadState Reload = new ReloadState();
     public DefaultState Default = new DefaultState();
@@ -15,10 +15,12 @@ public class ActionStateManager : MonoBehaviour
 
     public MultiAimConstraint _rHandAim;
     public MultiAimConstraint _lHandAim;
+    AudioSource _audioSource;
     void Start()
     {
         SwitchState(Default);
         _ammo = _currentWeapon.GetComponent<WeaponAmmo>();
+        _audioSource = _currentWeapon.GetComponent<AudioSource>();
         _anim = GetComponent<Animator>();
 
     }
@@ -35,9 +37,24 @@ public class ActionStateManager : MonoBehaviour
         _currentState.EnterState(this);
     }
 
-    public void ReloadState()
+    public void WeaponReloaded()
     {
         _ammo.Reload();
         SwitchState(Default);
+    }
+
+    public void MagOut()
+    {
+        _audioSource.PlayOneShot(_ammo._magOutSound);
+    }
+
+    public void MagIn()
+    {
+        _audioSource.PlayOneShot(_ammo._magInSound);
+    }
+
+    public void ReleaseSlide()
+    {
+        _audioSource.PlayOneShot(_ammo._releaseSlideSound);
     }
 }
