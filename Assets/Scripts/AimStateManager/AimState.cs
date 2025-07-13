@@ -2,14 +2,14 @@ using UnityEngine;
 
 public class AimState : AimBaseState
 {
-    public override void EnterState(AimStateManager _aim)
+    public override void EnterState(AimStateManager aim)
     {
-        _aim._anim.SetBool("Aiming", true);
-        _aim._currentFov = _aim._adsFov;
+        aim._anim.SetBool("Aiming", true);
+        aim._currentFov = aim._adsFov;
     }
 
-    public override void UpdateState(AimStateManager _aim)
+    public override void UpdateState(AimStateManager aim)
     {
-        if (Input.GetKeyUp(KeyCode.Mouse1)) _aim.SwitchState(_aim.Hip);
+        if (Input.GetKeyUp(KeyCode.Mouse1)) aim.SwitchState(aim.Hip);
     }
 }

@@ -2,14 +2,14 @@ using UnityEngine;
 
 public class HipFireState : AimBaseState
 {
-    public override void EnterState(AimStateManager _aim)
+    public override void EnterState(AimStateManager aim)
     {
-        _aim._anim.SetBool("Aiming", false);
-        _aim._currentFov = _aim._hipFov;
+        aim._anim.SetBool("Aiming", false);
+        aim._currentFov = aim._hipFov;
     }
 
-    public override void UpdateState(AimStateManager _aim)
+    public override void UpdateState(AimStateManager aim)
     {
-        if (Input.GetKey(KeyCode.Mouse1)) _aim.SwitchState(_aim.Aim);
+        if (Input.GetKey(KeyCode.Mouse1)) aim.SwitchState(aim.Aim);
     }
 }
