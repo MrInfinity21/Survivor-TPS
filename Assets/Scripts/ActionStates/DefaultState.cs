@@ -4,7 +4,8 @@ public class DefaultState : ActionBaseState
 {
     public override void EnterState(ActionStateManager actions)
     {
-
+        actions._rHandAim.weight = 1f;
+        actions._lHandAim.weight = 1f;
     }
 
     public override void UpdateState(ActionStateManager actions)

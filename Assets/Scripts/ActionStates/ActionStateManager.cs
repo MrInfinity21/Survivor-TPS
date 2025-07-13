@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
 public class ActionStateManager : MonoBehaviour
 {
@@ -11,6 +12,9 @@ public class ActionStateManager : MonoBehaviour
     [HideInInspector] public WeaponAmmo _ammo;
 
     [HideInInspector] public Animator _anim;
+
+    public MultiAimConstraint _rHandAim;
+    public MultiAimConstraint _lHandAim;
     void Start()
     {
         SwitchState(Default);
@@ -34,5 +38,6 @@ public class ActionStateManager : MonoBehaviour
     public void ReloadState()
     {
         _ammo.Reload();
+        SwitchState(Default);
     }
 }
