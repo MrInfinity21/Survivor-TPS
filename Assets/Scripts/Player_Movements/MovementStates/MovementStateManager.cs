@@ -31,6 +31,10 @@ public class MovementStateManager : MonoBehaviour
 
     [HideInInspector] public Animator animator;
 
+  
+
+
+
 
 
     void Start()
@@ -84,11 +88,7 @@ public class MovementStateManager : MonoBehaviour
 
     
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(_spherePos, controller.radius - 0.05f);
-    }
+    
 
 
 
