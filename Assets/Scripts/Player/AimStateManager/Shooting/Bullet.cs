@@ -3,8 +3,9 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    [SerializeField] float _timeToDestroy = 5f;
-    float _timer;
+    [SerializeField] private float _timeToDestroy = 5f;
+    [SerializeField] private float _damage = 25f;
+    private float _timer;
 
 
     void Update()
@@ -20,7 +21,11 @@ public class Bullet : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            Destroy(collision.gameObject);
+            EnemyHealth enemyHealth = collision.gameObject.GetComponent<EnemyHealth>();
+            if (enemyHealth != null )
+            {
+                enemyHealth.TakeDamage(_damage);
+            }
         }
         Destroy(this.gameObject);
     }

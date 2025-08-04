@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.AI;
 using DG.Tweening;
+using UnityEngine.Rendering;
+using UnityEngine.UIElements;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class BadGuyController : MonoBehaviour
@@ -17,6 +19,14 @@ public class BadGuyController : MonoBehaviour
     [SerializeField] private Transform _player;
     [SerializeField] private float _detectionRange = 10f;
 
+    [Header("Attack Settings")]
+    [SerializeField] private GameObject _projectilePrefab;
+    [SerializeField] private Transform _shootOrigin;
+    [SerializeField] private float _shootCooldown = 1f;
+    [SerializeField] private float _shootRange = 15f;
+    [SerializeField] private LayerMask _lineOfSightMask;
+    private float _lastShootTime = 0f;
+
     private NavMeshAgent _badEnemy;
     
 
@@ -24,7 +34,7 @@ public class BadGuyController : MonoBehaviour
     {
         _badEnemy = GetComponent<NavMeshAgent>();
         _badEnemy.enabled = false; // Disable during patrol with DOTween
-        _badEnemy.enabled = false;
+       
     }
 
     private void Start()
@@ -35,6 +45,8 @@ public class BadGuyController : MonoBehaviour
 
     private void Update()
     {
+        if (_player == null) return;
+
         float distanceToPlayer = Vector3.Distance(transform.position, _player.position);
 
         if(!_isChasing && distanceToPlayer <= _detectionRange)
@@ -46,26 +58,22 @@ public class BadGuyController : MonoBehaviour
         if (_isChasing && _badEnemy.enabled && _badEnemy.isOnNavMesh)
         {
             _badEnemy.SetDestination(_player.position);
-
-            Vector3 direction = (_player.position - transform.position).normalized;
-            direction.y = 0;
-            if (direction != Vector3.zero)
-            {
-                Quaternion lookRotation = Quaternion.LookRotation(direction);
-                transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
-            }
+            AimTowardsPlayer();
+            TryShootAtPlayer();
         }
     }
 
     private void StartPatrolling()
     {
-        if (_patrolPoints.Length == 0) return;
+        if (_patrolPoints == null || _patrolPoints.Length == 0) return;
 
         MoveToNextPatrolPoint();
     }
 
     private void MoveToNextPatrolPoint()
     {
+        if (_patrolPoints.Length == 0) return;
+
         Transform target = _patrolPoints[_currentPatrolIndex];
         float distance = Vector3.Distance(transform.position, target.position);
 
@@ -92,6 +100,41 @@ public class BadGuyController : MonoBehaviour
         _badEnemy.enabled = true;               
     }
     
+
+    private void AimTowardsPlayer()
+    {
+        Vector3 direction = (_player.position - transform.position).normalized;
+        direction.y = 0;
+        if (direction != Vector3.zero)
+        {
+            Quaternion lookRotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
+        }
+    }
+
+    private void TryShootAtPlayer()
+    {
+        if (Time.time < _lastShootTime + _shootCooldown) return;
+
+        float distanceToPlayer = Vector3.Distance(transform.position, _player.position);
+        if (distanceToPlayer > _shootRange) return;
+        if (_shootOrigin == null || _projectilePrefab == null) return;
+
+        Vector3 dir = (_player.position - _shootOrigin.position).normalized;
+        Shoot(dir);
+        _lastShootTime = Time.time;
+    }
+
+    private void Shoot(Vector3 direction)
+    {
+        GameObject proj = Instantiate(_projectilePrefab, _shootOrigin.position, Quaternion.LookRotation(direction));
+        EnemyProjectile ep = proj.GetComponent<EnemyProjectile>();
+        if (ep != null)
+        {
+            ep.Init(direction);
+        }
+    
+    }
     private void SnapToNavMesh()
     {
         NavMeshHit hit;
@@ -114,8 +157,13 @@ public class BadGuyController : MonoBehaviour
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(transform.position, _detectionRange);
         }
-    }
 
+        if (_shootOrigin != null)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawLine(_shootOrigin.position, _shootOrigin.position + transform.forward * 1f);
+        }
+    }
 
 
 
@@ -124,7 +172,8 @@ public class BadGuyController : MonoBehaviour
 
     private void Awake()
     {
-        _badGuyController = GetComponent<NavMeshAgent>();
+        _badGuyController = Get
+Component<NavMeshAgent>();
     }
 
     private void Update()

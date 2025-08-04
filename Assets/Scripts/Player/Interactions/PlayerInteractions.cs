@@ -15,10 +15,16 @@ public class PlayerInteractions : MonoBehaviour
 
     private void TryInteract()
     {
+        if (cam == null)
+        {
+            Debug.LogWarning("Camera not assigned");
+            return;
+        }
+
         Ray ray = new Ray(cam.position, cam.forward);
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, interactableLayer))
+        if (Physics.Raycast(ray, out hit, interactRange, interactableLayer))
         {
             if (hit.collider.CompareTag("Interactable"))
             {
