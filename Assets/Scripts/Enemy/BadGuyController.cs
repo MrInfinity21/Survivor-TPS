@@ -24,6 +24,7 @@ public class BadGuyController : MonoBehaviour
     [SerializeField] private Transform _shootOrigin;
     [SerializeField] private float _shootCooldown = 1f;
     [SerializeField] private float _shootRange = 15f;
+    [SerializeField] private float _stoppingDistance = 10f;
     [SerializeField] private LayerMask _lineOfSightMask;
     private float _lastShootTime = 0f;
 
@@ -45,7 +46,7 @@ public class BadGuyController : MonoBehaviour
 
     private void Update()
     {
-        if (_player == null) return;
+        if (_player == null || !_badEnemy.isOnNavMesh) return;
 
         float distanceToPlayer = Vector3.Distance(transform.position, _player.position);
 
@@ -55,12 +56,24 @@ public class BadGuyController : MonoBehaviour
                 StartChasing();
         }
         
-        if (_isChasing && _badEnemy.enabled && _badEnemy.isOnNavMesh)
+        if (_isChasing && _badEnemy.enabled)
         {
-            _badEnemy.SetDestination(_player.position);
-            AimTowardsPlayer();
-            TryShootAtPlayer();
+
+            if (distanceToPlayer > _stoppingDistance)
+            {
+                _badEnemy.isStopped = false;
+                _badEnemy.SetDestination(_player.position);
+            }
+            else
+            {
+                _badEnemy.ResetPath();
+                _badEnemy.isStopped = true;
+                AimTowardsPlayer();
+                TryShootAtPlayer();
+            }
+
         }
+        
     }
 
     private void StartPatrolling()
@@ -163,6 +176,9 @@ public class BadGuyController : MonoBehaviour
             Gizmos.color = Color.yellow;
             Gizmos.DrawLine(_shootOrigin.position, _shootOrigin.position + transform.forward * 1f);
         }
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(transform.position, _stoppingDistance);
     }
 
 

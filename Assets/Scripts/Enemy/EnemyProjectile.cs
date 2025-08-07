@@ -8,7 +8,7 @@ public class EnemyProjectile : MonoBehaviour
     [SerializeField] private float _damage = 50f;
     [SerializeField] private LayerMask _layerMask;
 
-    private float _timer;
+    
 
     private void Awake()
     {
@@ -24,11 +24,17 @@ public class EnemyProjectile : MonoBehaviour
     {
         if (((1 << other.gameObject.layer) & _layerMask) == 0) return;
 
+        Debug.Log($"Enemy projectile hit: {other.name}");
+
         PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
+        if (playerHealth != null)
+            playerHealth = other.GetComponentInParent<PlayerHealth>();
+
         if (playerHealth != null)
         {
             playerHealth.TakeDamage(_damage);
         }
+        
 
         Destroy(gameObject);
     }
