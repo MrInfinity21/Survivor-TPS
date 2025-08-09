@@ -2626,7 +2626,7 @@ MonoBehaviour:
   _patrolSpeed: 6
   _player: {fileID: 1785588243}
   _detectionRange: 10
-  _projectilePrefab: {fileID: 2528836660765985027, guid: 74140632b295b4a42abbd4feb0ec4d65, type: 3}
+  _projectilePrefab: {fileID: 8234479365428615081, guid: 74140632b295b4a42abbd4feb0ec4d65, type: 3}
   _shootOrigin: {fileID: 1984016351}
   _shootCooldown: 1
   _shootRange: 15
@@ -3696,10 +3696,10 @@ MonoBehaviour:
   - {fileID: 194251432}
   - {fileID: 823395}
   - {fileID: 1791071933}
-  _patrolSpeed: 6
+  _patrolSpeed: 5
   _player: {fileID: 1785588243}
   _detectionRange: 10
-  _projectilePrefab: {fileID: 2528836660765985027, guid: 74140632b295b4a42abbd4feb0ec4d65, type: 3}
+  _projectilePrefab: {fileID: 8234479365428615081, guid: 74140632b295b4a42abbd4feb0ec4d65, type: 3}
   _shootOrigin: {fileID: 197705780}
   _shootCooldown: 1
   _shootRange: 15
@@ -4070,7 +4070,7 @@ MonoBehaviour:
   _patrolSpeed: 6
   _player: {fileID: 1785588243}
   _detectionRange: 10
-  _projectilePrefab: {fileID: 2528836660765985027, guid: 74140632b295b4a42abbd4feb0ec4d65, type: 3}
+  _projectilePrefab: {fileID: 8234479365428615081, guid: 74140632b295b4a42abbd4feb0ec4d65, type: 3}
   _shootOrigin: {fileID: 975313101}
   _shootCooldown: 1
   _shootRange: 15
