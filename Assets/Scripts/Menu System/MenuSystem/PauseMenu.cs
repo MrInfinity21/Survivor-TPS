@@ -10,18 +10,24 @@ public class PauseMenu : MonoBehaviour
     public Button quitButton;
     public Button saveButton;
     public Button loadButton;
+    public Button mainMenuButton;
 
     public Transform playerTransform;
+
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip buttonClickSFX;
 
     private bool isPaused = false;
 
     private void Start()
     {
         pauseMenuUI.SetActive(false);
-        resumeButton.onClick.AddListener(ResumeGame);
-        quitButton.onClick.AddListener(QuitGame);
-        saveButton.onClick.AddListener(SaveGame);
-        loadButton.onClick.AddListener(LoadGame);
+        resumeButton.onClick.AddListener(() => { PlayClickSound(); ResumeGame(); });
+        quitButton.onClick.AddListener(() => { PlayClickSound(); QuitGame(); });
+        saveButton.onClick.AddListener(() => { PlayClickSound(); SaveGame(); });
+        loadButton.onClick.AddListener(() => { PlayClickSound(); LoadGame(); });
+        mainMenuButton.onClick.AddListener(() => { PlayClickSound(); MainMenu(); });
     }
 
     private void Update()
@@ -31,6 +37,14 @@ public class PauseMenu : MonoBehaviour
             if (isPaused) ResumeGame();
             else PauseGame();
         }
+    }
+
+    private void PlayClickSound()
+    {
+        if (audioSource != null && buttonClickSFX != null)
+        {
+            audioSource.PlayOneShot(buttonClickSFX);
+        } 
     }
 
     void PauseGame()
@@ -49,6 +63,11 @@ public class PauseMenu : MonoBehaviour
         isPaused = false;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = false;
+    }
+
+    void MainMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
     }
 
     void QuitGame()
